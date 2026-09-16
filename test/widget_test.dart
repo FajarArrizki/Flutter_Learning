@@ -1,30 +1,41 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:getting_started_flutter/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('beranda menampilkan 3 card katalog', (tester) async {
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.byType(Card), findsNWidgets(3));
+    expect(find.byType(ListTile), findsNWidgets(3));
+    expect(find.text('Kopi Susu Gula Aren'), findsOneWidget);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  testWidgets('tap card membuka detail lalu kembali ke beranda',
+      (tester) async {
+    await tester.pumpWidget(const MyApp());
+
+    await tester.tap(find.text('Kopi Susu Gula Aren'));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Detail Katalog'), findsOneWidget);
+    expect(find.text('Deskripsi'), findsOneWidget);
+    expect(find.text('Rp 22.000'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.text('Waktu melihat detail: 2 detik'), findsOneWidget);
+
+    await tester.tap(find.text('Tandai Favorit'));
+    await tester.pump();
+    expect(find.text('Favorit Ditandai'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.arrow_back_rounded));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    expect(find.text('Katalog Produk'), findsOneWidget);
+    expect(find.byType(Card), findsNWidgets(3));
   });
 }
