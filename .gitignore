@@ -50,3 +50,6 @@ app.*.map.json
 # Local tooling & task notes
 .commandcode/
 .task/
+
+# Submission (local only, do not commit)
+SUBMISSION.md
