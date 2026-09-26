@@ -1,17 +1,63 @@
-# getting_started_flutter
+# Kosply — Flutter Learning (slicing-ui)
 
-A new Flutter project.
+Secondhand goods e-commerce for students. UI slicing from the PBL UAS Figma design: **Splash → Register → Login**.
 
-## Getting Started
+> **Figma:** [Kosply mobile design](https://www.figma.com/design/TkunWRuVgaA6JapwO536j0/Kosply-mobile-design?node-id=28-694&p=f&t=pBTeqIGpG67V5TIH-0)
 
-This project is a starting point for a Flutter application.
+## Design results (Figma vs Slicing)
 
-A few resources to get you started if this is your first Flutter project:
+| Screen | Figma | Slicing |
+|---|---|---|
+| Splash | <img src="assets/readme/figma/Splash%20screen.png" width="250" alt="Splash Figma"> | <img src="assets/readme/slicing/Splashscrreen.png" width="250" alt="Splash Slicing"> |
+| Register | <img src="assets/readme/figma/Register.png" width="250" alt="Register Figma"> | <img src="assets/readme/slicing/register.png" width="250" alt="Register Slicing"> |
+| Login | <img src="assets/readme/figma/Login.png" width="250" alt="Login Figma"> | <img src="assets/readme/slicing/login.png" width="250" alt="Login Slicing"> |
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Application flow (login > logout)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+| Step | Screen | What happens |
+|---|---|---|
+| 1 | Splash | Brand logo for 2 seconds, then auto-navigates to Register |
+| 2 | Register (signed out) | Shows Google / Apple / `Daftar with Email` buttons plus the `Login` link |
+| 3 | Login | Enter email + password, press `Login`. `Back` returns without signing in |
+| 4 | Register (signed in) | After a successful login the app returns here showing `Signed in as <email>` — no need to register again |
+| 5 | Logout | Press `Logout` on Register to clear the session and return to the signed-out state |
+
+## Architecture
+
+```
+lib/
+  main.dart                        # MyApp + Provider registration
+  models/user_model.dart           # UserModel (pure data, no Flutter import)
+  controllers/auth_controller.dart # AuthController (ChangeNotifier, SEPARATE from UI)
+  screens/
+    splash_screen.dart
+    register_screen.dart
+    login_screen.dart
+assets/images/                     # kosply_icon/logo, register_illustration, google/apple icons
+test/
+  auth_controller_test.dart        # global-state unit tests
+  widget_test.dart                 # widget + flow tests
+```
+
+## State management
+
+- **Global — Provider (`AuthController`):** login status (`isLoggedIn`, `user`, `error`) shared across screens. Signing in on `LoginScreen` reflects instantly on `RegisterScreen` (`Signed in as …` + `Logout`) via `notifyListeners`. Kept in `lib/controllers/` per the separation requirement.
+- **Local — `setState`:** password visibility toggle (eye icon) in `LoginScreen`, splash delay timer in `SplashScreen`.
+
+## Advanced UI
+
+The Register middle section uses `CustomScrollView` + `SliverFillRemaining` (slivers) rendering **pixel-identical** visuals — centered on tall screens, scrollable on small ones. No design change.
+
+## Code docs
+
+Every Dart file is documented in **NatSpec style (English)**: `/// @title`, `@notice`, `@dev`, `@param`, `@return`, `@author`.
+
+## Setup / run / test
+
+```bash
+flutter pub get
+flutter run                 # mobile / desktop
+flutter run -d chrome       # web (hard refresh with Ctrl+Shift+R on stale cache)
+flutter analyze
+flutter test
+```
