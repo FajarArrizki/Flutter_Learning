@@ -50,6 +50,26 @@ void main() {
     await tester.pumpAndSettle();
   });
 
+  testWidgets('Splash plays basic fade/scale entry animation', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const MyApp());
+
+    // @dev Keys scope to the splash logo; route transitions animate too.
+    const logoFade = ValueKey('splashFade');
+    const logoScale = ValueKey('splashScale');
+    expect(find.byKey(logoFade), findsOneWidget);
+    expect(find.byKey(logoScale), findsOneWidget);
+
+    // @dev Mid-animation the logo is partially faded in.
+    await tester.pump(const Duration(milliseconds: 400));
+    final fade = tester.widget<FadeTransition>(find.byKey(logoFade));
+    expect(fade.opacity.value, lessThan(1.0));
+
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+  });
+
   testWidgets('Splash navigates to Register after delay', (
     WidgetTester tester,
   ) async {
